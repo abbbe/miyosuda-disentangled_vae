@@ -7,7 +7,11 @@ import numpy as np
 import tensorflow as tf
 import random
 import os
-from scipy.misc import imsave
+
+from tensorflow.keras.preprocessing.image import save_img
+def imsave(path, x):
+  x1 = x[...,np.newaxis]
+  save_img(path, x1)
 
 from model import VAE
 from data_manager import DataManager
@@ -65,6 +69,8 @@ def train(sess,
 
     # Disentangle check
     disentangle_check(sess, model, manager)
+
+    print("epoch %d done, capacity %f" % (epoch, model._calc_encoding_capacity(step)))
 
     # Save checkpoint
     saver.save(sess, flags.checkpoint_dir + '/' + 'checkpoint', global_step = step)

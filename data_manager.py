@@ -4,6 +4,9 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
+# https://stackoverflow.com/questions/55890813/how-to-fix-object-arrays-cannot-be-loaded-when-allow-pickle-false-for-imdb-loa/56062555
+np_load_old = np.load
+np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
 
 class DataManager(object):
   def load(self):
@@ -24,11 +27,22 @@ class DataManager(object):
     # [ 1,  3,  6, 40, 32, 32]
     # color, shape, scale, orientation, posX, posY
 
+    # --- CUT ONLY ELLIPSES - BEGIN
+    latents_sizes[1] = 1 # only one shape is there
+    elipses_idxs = np.where(latents_values[:,1] == 2)[0] # "== 2" - ellipses
+    self.imgs = self.imgs[elipses_idxs]
+    latents_values = latents_values[elipses_idxs]
+    # --- CUT ONLY ELLIPSES - END
+
     self.n_samples = latents_sizes[::-1].cumprod()[-1]
     # 737280
 
     self.latents_bases = np.concatenate((latents_sizes[::-1].cumprod()[::-1][1:],
                                          np.array([1,])))
+
+    print("latents_sizes: %s" % str(latents_sizes))
+    print("n_samples: %s" % str(self.n_samples))
+    print("latents_bases: %s" % str(self.latents_bases))
     # [737280, 245760, 40960, 1024, 32, 1]
     
   @property
