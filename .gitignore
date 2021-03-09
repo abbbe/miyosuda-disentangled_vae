@@ -1,6 +1,7 @@
 checkpoints*/*
 *.pyc
 log/*
-disentangle_img
-disentangle_anim
-reconstr_img
+disentangle_img/
+disentangle_anim/
+reconstr_img/
+.ipynb_checkpoints/
